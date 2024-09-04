@@ -3,11 +3,10 @@
 namespace App\Actions;
 
 use App\Models\User;
-use Illuminate\Http\Response;
 
 class RegisterUserAction
 {
-    public function handle(string $email, string $name, string $password): Response|bool
+    public function handle(string $email, string $name, string $password): string
     {
         User::create(['email' => $email, 'name' => $name, 'password' => $password]);
         $credentials = ['email' => $email, 'password' => $password];

@@ -58,7 +58,9 @@ class AuthTest extends TestCase
 
         $refresh_response->assertStatus(200);
 
-        $me_response = $this->get('/api/me', [], ['Authorization' => 'Bearer '.$token]);
+        $refreshed_token = $refresh_response->json('access_token');
+
+        $me_response = $this->get('/api/me', [], ['Authorization' => 'Bearer '.$refreshed_token]);
         $me_response->assertStatus(200);
         $me_response->assertJsonFragment(['email' => $userData['email']]);
     }

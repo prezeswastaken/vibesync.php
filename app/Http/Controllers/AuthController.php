@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Actions\RegisterUserAction;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request, RegisterUserAction $action): Response
+    public function register(RegisterRequest $request, RegisterUserAction $action)
     {
 
         $validated = $request->validated();
@@ -25,7 +24,7 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function login(): Response
+    public function login()
     {
         $credentials = request(['email', 'password']);
 
@@ -50,14 +49,14 @@ class AuthController extends Controller
         return response(['message' => 'Successfully logged out']);
     }
 
-    public function refresh(): Response
+    public function refresh()
     {
         return $this->respondWithToken(auth()->refresh());
     }
 
-    protected function respondWithToken(string $token): Response
+    protected function respondWithToken(string $token)
     {
-        return response([
+        return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
