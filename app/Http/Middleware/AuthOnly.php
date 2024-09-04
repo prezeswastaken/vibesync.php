@@ -13,6 +13,6 @@ class AuthOnly extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        throw new HttpResponseException(response()->json(['message' => 'Unauthenticated.'], 401));
+        throw new HttpResponseException(response(['message' => 'Unauthenticated.'], 401));
     }
 }
