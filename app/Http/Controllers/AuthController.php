@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\RegisterUserAction;
+use App\Exceptions\AuthException;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -28,11 +30,13 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response(['error' => "Unauthorized! Those credentials didn't match our records."], 401);
+        if (! $token = JWTAuth::attempt($credentials)) {
+
+            throw AuthException::unauthorized();
         }
 
         return $this->respondWithToken($token);
+
     }
 
     public function me(): JWTSubject
@@ -44,22 +48,23 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        auth()->logout();
+        Auth::logout();
 
-        return response(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function refresh()
+    public function refresh(): JsonResponse
     {
         return $this->respondWithToken(auth()->refresh());
     }
 
-    protected function respondWithToken(string $token)
+    protected function respondWithToken(string $token): JsonResponse
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => JWTAuth::user(),
         ]);
     }
 }

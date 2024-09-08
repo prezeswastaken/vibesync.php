@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Exceptions\AuthException;
 use App\Models\User;
 
 class RegisterUserAction
@@ -13,7 +14,7 @@ class RegisterUserAction
 
         if (! $token = auth()->attempt($credentials)) {
 
-            return response(['error' => 'Unauthorized'], 401);
+            throw AuthException::unauthorized();
         }
 
         return $token;

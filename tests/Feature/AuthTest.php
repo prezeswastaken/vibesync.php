@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\AuthException;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,7 +26,7 @@ class AuthTest extends TestCase
 
         $this->assertDatabaseHas('users', ['email' => $userData['email'], 'name' => $userData['name']]);
 
-        $response->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+        $response->assertJsonStructure(['access_token', 'token_type', 'expires_in', 'user']);
     }
 
     public function test_user_cannot_register_with_existing_email(): void
@@ -51,7 +52,7 @@ class AuthTest extends TestCase
         $user = User::create($userData);
         $token_response = $this->post('/api/login', $userData);
         $token_response->assertStatus(200);
-        $token_response->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+        $token_response->assertJsonStructure(['access_token', 'token_type', 'expires_in', 'user']);
 
         $token = $token_response->json('access_token');
         $refresh_response = $this->post('/api/refresh', [], ['Authorization' => 'Bearer '.$token]);
@@ -63,5 +64,19 @@ class AuthTest extends TestCase
         $me_response = $this->get('/api/me', [], ['Authorization' => 'Bearer '.$refreshed_token]);
         $me_response->assertStatus(200);
         $me_response->assertJsonFragment(['email' => $userData['email']]);
+    }
+
+    public function test_invalid_credentials(): void
+    {
+        $userData = [
+            'email' => 'aaaa@bbbb.com',
+            'password' => 'password',
+        ];
+
+        $response = $this->post('/api/login', $userData);
+
+        $response->assertStatus(401);
+
+        $response->assertJsonFragment(['message' => AuthException::unauthorized()->getMessage()]);
     }
 }
