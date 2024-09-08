@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Listing;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ListingSeeder extends Seeder
@@ -12,6 +13,6 @@ class ListingSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Listing::factory(10)->for(User::first())->create();
     }
 }

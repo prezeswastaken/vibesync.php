@@ -17,7 +17,7 @@ class ListingTest extends TestCase
      */
     public function test_user_can_create_listing(): void
     {
-        $user = User::find(1);
+        $user = User::factory()->create();
         Auth::login($user);
         $this->assertNull($user->listings->first());
         $listingRequest = [
@@ -78,5 +78,27 @@ class ListingTest extends TestCase
         $response = $this->post('/api/listings', $listingRequest);
 
         $response->assertStatus(302);
+    }
+
+    public function test_user_can_show_all_listings(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $response = $this->get('/api/listings');
+
+        $response->assertStatus(200);
+
+        $listings = $response->json();
+
+        $this->assertNotEmpty($listings, 'The listings array is empty'); // Ensure listings exist
+
+        foreach ($listings as $listing) {
+            $this->assertArrayHasKey('title', $listing);
+            $this->assertArrayHasKey('body', $listing);
+            $this->assertArrayHasKey('is_sale_offer', $listing, 'Listing is missing "is_sale_offer" key');
+            $this->assertArrayHasKey('price', $listing);
+            $this->assertArrayHasKey('tags', $listing);
+            $this->assertArrayHasKey('genres', $listing);
+        }
     }
 }
