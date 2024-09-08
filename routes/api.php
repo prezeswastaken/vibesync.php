@@ -10,4 +10,6 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::get('me', [App\Http\Controllers\AuthController::class, 'me']);
     Route::post('logout', [App\Http\Controllers\AuthController::class, 'logout']);
     Route::post('refresh', [App\Http\Controllers\AuthController::class, 'refresh']);
+
+    Route::apiResource('listings', App\Http\Controllers\ListingController::class);
 });

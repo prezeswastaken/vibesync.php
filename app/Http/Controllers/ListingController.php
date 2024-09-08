@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreListingAction;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
 use App\Models\Listing;
+use JWTAuth;
 
 class ListingController extends Controller
 {
@@ -13,23 +15,27 @@ class ListingController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(Listing::all());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreListingRequest $request)
+    public function store(StoreListingRequest $request, StoreListingAction $action)
     {
-        //
+        $validated = $request->validated();
+
+        $listing = $action->handle(
+            $validated['title'],
+            $validated['body'],
+            $validated['is_sale_offer'],
+            $validated['price'],
+            $validated['tag_ids'],
+            $validated['genre_ids'],
+            JWTAuth::user()->id,
+        );
+
+        return response()->json($listing, 201);
     }
 
     /**
@@ -37,7 +43,9 @@ class ListingController extends Controller
      */
     public function show(Listing $listing)
     {
-        //
+        $listing->load('tags', 'genres', 'links');
+
+        return response()->json($listing);
     }
 
     /**

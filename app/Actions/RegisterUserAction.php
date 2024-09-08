@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Exceptions\AuthException;
 use App\Models\User;
+use JWTAuth;
 
 class RegisterUserAction
 {
@@ -12,7 +13,7 @@ class RegisterUserAction
         User::create(['email' => $email, 'name' => $name, 'password' => $password]);
         $credentials = ['email' => $email, 'password' => $password];
 
-        if (! $token = auth()->attempt($credentials)) {
+        if (! $token = JWTAuth::attempt($credentials)) {
 
             throw AuthException::unauthorized();
         }

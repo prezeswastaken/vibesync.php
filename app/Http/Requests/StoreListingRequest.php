@@ -2,27 +2,28 @@
 
 namespace App\Http\Requests;
 
+use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreListingRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check();
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255|min:3',
+            'body' => 'required|string|min:3',
+            'is_sale_offer' => 'required|boolean',
+            'price' => 'nullable|numeric|required',
+            'tag_ids' => 'array|required',
+            'genre_ids' => 'array|required',
         ];
     }
 }
