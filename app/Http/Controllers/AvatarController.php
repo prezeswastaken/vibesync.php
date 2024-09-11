@@ -11,8 +11,9 @@ class AvatarController extends Controller
     public function store(StoreAvatarRequest $request, SetAvatarForUserAction $action)
     {
         $image = $request->file('avatar');
+
         $action->handle(Auth::user(), $image);
 
-        return response()->json(null, 201);
+        return response()->json(['message' => 'Avatar changed succesfully!'], 201);
     }
 }
