@@ -7,20 +7,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ListingResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'user' => $this->user->name,
+            'author' => $this->user->name,
             'title' => $this->title,
-            'body' => $this->description,
+            'body' => $this->body,
             'price' => $this->price,
             'is_sale_offer' => $this->is_sale_offer,
+            'is_published' => $this->is_published,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'genres' => $this->genres->pluck('name'),

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_sale_offer');
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->float('price')->nullable();
+            $table->boolean('is_published')->default(false);
             $table->timestamps();
         });
     }

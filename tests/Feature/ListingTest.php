@@ -93,6 +93,7 @@ class ListingTest extends TestCase
         $this->assertNotEmpty($listings, 'The listings array is empty'); // Ensure listings exist
 
         foreach ($listings as $listing) {
+            $this->assertArrayHasKey('author', $listing);
             $this->assertArrayHasKey('title', $listing);
             $this->assertArrayHasKey('body', $listing);
             $this->assertArrayHasKey('is_sale_offer', $listing, 'Listing is missing "is_sale_offer" key');
@@ -100,5 +101,57 @@ class ListingTest extends TestCase
             $this->assertArrayHasKey('tags', $listing);
             $this->assertArrayHasKey('genres', $listing);
         }
+    }
+
+    public function test_user_can_publish_their_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id, 'is_published' => false]);
+
+        $response = $this->post("/api/listings/{$listing->id}/publish");
+
+        $response->assertStatus(200);
+
+        $listing->refresh();
+
+        $this->assertTrue($listing->is_published == true);
+    }
+
+    public function test_user_cant_publish_other_users_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2, 'is_published' => false]);
+
+        $response = $this->post("/api/listings/{$listing->id}/publish");
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_can_unpublish_their_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id, 'is_published' => true]);
+
+        $response = $this->post("/api/listings/{$listing->id}/unpublish");
+
+        $response->assertStatus(200);
+
+        $listing->refresh();
+
+        $this->assertTrue($listing->is_published == false);
+    }
+
+    public function test_user_cant_unpublish_other_users_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2, 'is_published' => true]);
+
+        $response = $this->post("/api/listings/{$listing->id}/unpublish");
+
+        $response->assertStatus(403);
     }
 }

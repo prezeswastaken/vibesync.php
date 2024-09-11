@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'prezes',
             'email' => config('testing_data.email'),
         ]);
-        // User::factory(10)->create();
+        User::factory(10)->create();
         $this->call([
             TagSeeder::class,
             GenreSeeder::class,

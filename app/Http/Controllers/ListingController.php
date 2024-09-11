@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\AddLinkToListingAction;
 use App\Actions\StoreListingAction;
+use App\Exceptions\ListingException;
+use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\StoreListingRequest;
-use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ListingResource;
 use App\Models\Listing;
 use JWTAuth;
@@ -33,9 +35,6 @@ class ListingController extends Controller
         return response()->json($listing, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Listing $listing)
     {
         $listing->load('tags', 'genres', 'links');
@@ -43,27 +42,43 @@ class ListingController extends Controller
         return response()->json($listing);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Listing $listing)
+    public function addLink(StoreLinkRequest $request, Listing $listing, AddLinkToListingAction $action)
     {
-        //
+        if ($listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::unauthorized();
+        }
+
+        $link = $action->handle(
+            $request->title,
+            $request->url,
+            $request->description,
+            $listing,
+        );
+
+        return response()->json($link, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateListingRequest $request, Listing $listing)
+    public function publish(Listing $listing)
     {
-        //
+        if ($listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::unauthorized();
+        }
+
+        $listing->is_published = true;
+        $listing->save();
+
+        return response()->json($listing);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Listing $listing)
+    public function unpublish(Listing $listing)
     {
-        //
+        if ($listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::unauthorized();
+        }
+
+        $listing->is_published = false;
+        $listing->save();
+
+        return response()->json($listing);
     }
 }
