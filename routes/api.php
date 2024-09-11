@@ -15,4 +15,6 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::post('listings/{listing}/links', [App\Http\Controllers\ListingController::class, 'addLink']);
     Route::post('listings/{listing}/publish', [App\Http\Controllers\ListingController::class, 'publish']);
     Route::post('listings/{listing}/unpublish', [App\Http\Controllers\ListingController::class, 'unpublish']);
+
+    Route::post('avatars', [App\Http\Controllers\AvatarController::class, 'store']);
 });
