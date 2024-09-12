@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function listings(): HasMany
     {
-        return $this->hasMany(Listing::class);
+        return $this->hasMany(Listing::class)->chaperone();
     }
 
     /**

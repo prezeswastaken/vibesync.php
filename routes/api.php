@@ -18,3 +18,6 @@ Route::middleware([AuthOnly::class])->group(function () {
 
     Route::post('avatars', [App\Http\Controllers\AvatarController::class, 'store']);
 });
+
+Route::get('tags', [App\Http\Controllers\TagController::class, 'index']);
+Route::get('genres', [App\Http\Controllers\GenreController::class, 'index']);

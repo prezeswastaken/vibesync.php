@@ -8,12 +8,11 @@ use App\Models\Genre;
 
 class GenreController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $genres = Genre::orderBy('name')->get();
+
+        return response()->json($genres);
     }
 
     /**

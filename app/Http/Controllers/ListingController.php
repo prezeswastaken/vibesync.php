@@ -15,7 +15,7 @@ class ListingController extends Controller
 {
     public function index()
     {
-        return response()->json(ListingResource::collection(Listing::all()));
+        return response()->json(ListingResource::collection(Listing::with('user')->where('is_published', true)->get()));
     }
 
     public function store(StoreListingRequest $request, StoreListingAction $action)

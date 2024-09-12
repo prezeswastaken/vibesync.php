@@ -27,9 +27,19 @@ class ListingFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (\App\Models\Listing $listing) {
-            $listing->genres()->attach(\App\Models\Genre::factory()->count(3)->create());
-            $listing->tags()->attach(\App\Models\Tag::factory()->count(3)->create());
+            $listing->genres()->attach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            $listing->tags()->attach([2, 3, 4]);
             $listing->links()->save(\App\Models\Link::factory()->make());
+        });
+
+    }
+
+    public function published(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_published' => true,
+            ];
         });
     }
 }

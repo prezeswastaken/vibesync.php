@@ -6,13 +6,11 @@ use Illuminate\Database\Seeder;
 
 class GenreSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $genre_names = [
             'HipHop',
+            'Trap',
             'Pop',
             'Rock',
             'Jazz',

@@ -8,12 +8,11 @@ use App\Models\Tag;
 
 class TagController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $tags = Tag::orderBy('name')->get();
+
+        return response()->json($tags);
     }
 
     /**
