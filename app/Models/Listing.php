@@ -18,6 +18,7 @@ class Listing extends Model
     {
         return [
             'is_published' => 'boolean',
+            'is_sale_offer' => 'boolean',
         ];
     }
 

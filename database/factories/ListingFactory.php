@@ -18,7 +18,7 @@ class ListingFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence,
-            'body' => $this->faker->paragraph,
+            'body' => $this->faker->realTextBetween(10, 1000),
             'is_sale_offer' => $this->faker->boolean,
             'price' => $this->faker->boolean ? $this->faker->randomFloat(2, 0, 1000) : null,
         ];

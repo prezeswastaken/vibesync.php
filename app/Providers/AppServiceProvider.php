@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use RateLimiter;
 
@@ -24,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        DB::listen(function ($query) {
+            logger()->info('Query Executed: '.$query->sql);
+            logger()->info('Bindings: '.implode(', ', $query->bindings));
+            logger()->info('Time: '.$query->time.' ms');
+            logger()->info('');
         });
     }
 }

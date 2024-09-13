@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\ListingException;
 use App\Models\Listing;
 use App\Models\User;
 use Auth;
@@ -12,9 +13,6 @@ class ListingTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
     public function test_user_can_create_listing(): void
     {
         $user = User::factory()->create();
@@ -153,5 +151,141 @@ class ListingTest extends TestCase
         $response = $this->post("/api/listings/{$listing->id}/unpublish");
 
         $response->assertStatus(403);
+    }
+
+    public function test_user_can_list_their_listings(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $response = $this->get('/api/my/listings');
+
+        $response->assertStatus(200);
+
+        $listings = $response->json();
+
+        $this->assertNotEmpty($listings, 'The listings array is empty');
+
+        foreach ($listings as $listing) {
+            $this->assertArrayHasKey('author', $listing);
+            $this->assertArrayHasKey('title', $listing);
+            $this->assertArrayHasKey('body', $listing);
+            $this->assertArrayHasKey('is_sale_offer', $listing, 'Listing is missing "is_sale_offer" key');
+            $this->assertArrayHasKey('price', $listing);
+            $this->assertArrayHasKey('tags', $listing);
+            $this->assertArrayHasKey('genres', $listing);
+        }
+
+        $this->assertEquals(count($listings), $user->listings->count());
+    }
+
+    public function test_user_can_show_their_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->get("/api/listings/{$listing->id}");
+
+        $response->assertStatus(200);
+
+        $listing = $response->json();
+
+        $this->assertArrayHasKey('author', $listing);
+        $this->assertArrayHasKey('title', $listing);
+        $this->assertArrayHasKey('body', $listing);
+        $this->assertArrayHasKey('is_sale_offer', $listing, 'Listing is missing "is_sale_offer" key');
+        $this->assertArrayHasKey('price', $listing);
+        $this->assertArrayHasKey('tags', $listing);
+        $this->assertArrayHasKey('genres', $listing);
+    }
+
+    public function test_user_can_show_published_listing_of_any_user(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2, 'is_published' => true]);
+
+        $response = $this->get("/api/listings/{$listing->id}");
+
+        $response->assertStatus(200);
+
+        $listing = $response->json();
+
+        $this->assertArrayHasKey('author', $listing);
+        $this->assertArrayHasKey('title', $listing);
+        $this->assertArrayHasKey('body', $listing);
+        $this->assertArrayHasKey('is_sale_offer', $listing);
+        $this->assertArrayHasKey('price', $listing);
+        $this->assertArrayHasKey('tags', $listing);
+        $this->assertArrayHasKey('genres', $listing);
+    }
+
+    public function test_user_cant_show_unpublished_listing_of_other_user(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2, 'is_published' => false]);
+
+        $response = $this->get("/api/listings/{$listing->id}");
+
+        $response->assertStatus(ListingException::notFound()->getCode());
+        $response->assertJson(['message' => ListingException::notFound()->getMessage()]);
+    }
+
+    public function test_user_can_edit_their_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id]);
+
+        $newListingData = [
+            'title' => 'New great title',
+            'body' => 'New body',
+            'is_sale_offer' => false,
+            'price' => 100,
+            'tag_ids' => [1, 2, 3],
+            'genre_ids' => [1, 2, 3],
+        ];
+
+        $response = $this->put("/api/listings/{$listing->id}", $newListingData);
+
+        $listing->refresh();
+
+        $response->assertStatus(200);
+
+        $this->assertEquals($newListingData['title'], $listing->title);
+        $this->assertEquals($newListingData['body'], $listing->body);
+        $this->assertEquals($newListingData['is_sale_offer'], $listing->is_sale_offer);
+        $this->assertEquals($newListingData['price'], $listing->price);
+
+        $listing->tags->each(function ($tag) use ($newListingData) {
+            $this->assertContains($tag->id, $newListingData['tag_ids']);
+        });
+        $listing->genres->each(function ($genre) use ($newListingData) {
+            $this->assertContains($genre->id, $newListingData['genre_ids']);
+        });
+
+    }
+
+    public function test_user_cant_edit_other_users_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2]);
+
+        $newListingData = [
+            'title' => 'New title',
+            'body' => 'New body',
+            'is_sale_offer' => false,
+            'price' => 100,
+            'tag_ids' => [1, 2, 3],
+            'genre_ids' => [1, 2, 3],
+        ];
+
+        $response = $this->put("/api/listings/{$listing->id}", $newListingData);
+
+        $response->assertStatus(ListingException::unauthorized()->getCode());
+
+        $response->assertJson(['message' => ListingException::unauthorized()->getMessage()]);
     }
 }

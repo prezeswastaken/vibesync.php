@@ -23,7 +23,7 @@ class ListingResource extends JsonResource
             'updated_at' => $this->updated_at,
             'genres' => $this->genres->pluck('name'),
             'tags' => $this->tags->pluck('name'),
-            'links' => $this->links,
+            'links' => LinkResource::collection($this->links),
         ];
     }
 }

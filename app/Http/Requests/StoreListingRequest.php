@@ -21,7 +21,7 @@ class StoreListingRequest extends FormRequest
             'title' => 'required|string|max:255|min:3',
             'body' => 'required|string|min:3',
             'is_sale_offer' => 'required|boolean',
-            'price' => 'nullable|numeric|required',
+            'price' => 'nullable|numeric|required_if:is_sale_offer,true',
             'tag_ids' => 'array|required',
             'genre_ids' => 'array|required',
         ];

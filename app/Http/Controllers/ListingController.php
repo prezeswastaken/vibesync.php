@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Actions\AddLinkToListingAction;
 use App\Actions\StoreListingAction;
+use App\Actions\UpdateListingAction;
 use App\Exceptions\ListingException;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\StoreListingRequest;
+use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ListingResource;
 use App\Models\Listing;
 use JWTAuth;
@@ -15,20 +17,33 @@ class ListingController extends Controller
 {
     public function index()
     {
-        return response()->json(ListingResource::collection(Listing::with('user')->where('is_published', true)->get()));
+        return response()->json(ListingResource::collection(
+            Listing::with('user:avatar_url,name,id')
+                ->where('is_published', true)
+                ->orderByDesc('created_at')
+                ->get()
+        ));
+    }
+
+    public function myIndex()
+    {
+        $user = JWTAuth::user();
+
+        return response()->json(ListingResource::collection(
+            $user->listings
+                ->load('user:avatar_url,name,id')->sortByDesc('created_at')
+        ));
     }
 
     public function store(StoreListingRequest $request, StoreListingAction $action)
     {
-        $validated = $request->validated();
-
         $listing = $action->handle(
-            $validated['title'],
-            $validated['body'],
-            $validated['is_sale_offer'],
-            $validated['price'],
-            $validated['tag_ids'],
-            $validated['genre_ids'],
+            $request->title,
+            $request->body,
+            $request->is_sale_offer,
+            $request->price,
+            $request->tag_ids,
+            $request->genre_ids,
             JWTAuth::user()->id,
         );
 
@@ -37,7 +52,28 @@ class ListingController extends Controller
 
     public function show(Listing $listing)
     {
-        $listing->load('tags', 'genres', 'links');
+        if (! $listing->is_published && $listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::notFound();
+        }
+
+        return response()->json(new ListingResource($listing));
+    }
+
+    public function update(Listing $listing, UpdateListingRequest $request, UpdateListingAction $action)
+    {
+        if ($listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::unauthorized();
+        }
+
+        $listing = $action->handle(
+            $listing,
+            $request->title,
+            $request->body,
+            $request->is_sale_offer,
+            $request->price,
+            $request->tag_ids,
+            $request->genre_ids,
+        );
 
         return response()->json($listing);
     }
