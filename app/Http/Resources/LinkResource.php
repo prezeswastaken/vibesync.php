@@ -14,9 +14,7 @@ class LinkResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
             'url' => $this->url,
-            'description' => $this->description,
             'listing_id' => $this->listing_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

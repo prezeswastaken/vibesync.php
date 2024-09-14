@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Link;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,7 +30,9 @@ class ListingFactory extends Factory
         return $this->afterCreating(function (\App\Models\Listing $listing) {
             $listing->genres()->attach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
             $listing->tags()->attach([2, 3, 4]);
-            $listing->links()->save(\App\Models\Link::factory()->make());
+            Link::factory()->count(3)->create([
+                'listing_id' => $listing->id,
+            ]);
         });
 
     }

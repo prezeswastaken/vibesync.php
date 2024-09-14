@@ -6,12 +6,10 @@ use App\Models\Listing;
 
 class AddLinkToListingAction
 {
-    public function handle(string $title, string $url, string $description, Listing $listing)
+    public function handle(string $url, Listing $listing)
     {
         return $listing->links()->create([
-            'title' => $title,
             'url' => $url,
-            'description' => $description,
         ]);
     }
 }

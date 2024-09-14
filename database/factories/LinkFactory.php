@@ -12,9 +12,7 @@ class LinkFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence,
             'url' => $this->faker->url,
-            'description' => $this->faker->boolean(50) ? $this->faker->sentence : null,
         ];
     }
 }

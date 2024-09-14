@@ -2,9 +2,7 @@
 
 namespace App\Exceptions;
 
-use Exception;
-
-class AvatarException extends Exception
+class AvatarException extends AppException
 {
     public static function cantStore(): self
     {

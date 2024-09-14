@@ -20,9 +20,7 @@ class LinksTest extends TestCase
         $initial_links_count = $listing->links->count();
 
         $linkData = [
-            'title' => 'Google',
             'url' => 'https://www.google.com',
-            'description' => 'Search engine',
         ];
 
         $response = $this->postJson("/api/listings/{$listing->id}/links", $linkData);
@@ -42,12 +40,44 @@ class LinksTest extends TestCase
         $this->actingAs($user);
 
         $linkData = [
-            'title' => 'Google',
             'url' => 'https://www.google.com',
-            'description' => 'Search engine',
         ];
 
         $response = $this->postJson("/api/listings/{$listing->id}/links", $linkData);
+
+        $response->assertStatus(ListingException::unauthorized()->getCode());
+
+        $response->assertJson([
+            'message' => ListingException::unauthorized()->getMessage(),
+        ]);
+    }
+
+    public function test_user_can_delete_links_from_their_listing(): void
+    {
+        $listing = Listing::find(1);
+        $user = $listing->user;
+        $this->actingAs($user);
+
+        $link = $listing->links->first();
+
+        $response = $this->deleteJson("/api/links/{$link->id}");
+
+        $response->assertStatus(204);
+
+        $listing->refresh();
+
+        $this->assertNotContains($link->id, $listing->links->pluck('id'));
+    }
+
+    public function test_user_cant_delete_links_from_other_users_listings(): void
+    {
+        $listing = Listing::find(1);
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $link = $listing->links->first();
+
+        $response = $this->deleteJson("/api/links/{$link->id}");
 
         $response->assertStatus(ListingException::unauthorized()->getCode());
 
