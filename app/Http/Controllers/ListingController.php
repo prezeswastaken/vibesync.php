@@ -8,6 +8,7 @@ use App\Exceptions\ListingException;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ListingResource;
+use App\Http\Resources\ShowListingResource;
 use App\Models\Listing;
 use JWTAuth;
 
@@ -54,7 +55,7 @@ class ListingController extends Controller
             throw ListingException::notFound();
         }
 
-        return response()->json(new ListingResource($listing));
+        return response()->json(new ShowListingResource($listing));
     }
 
     public function update(Listing $listing, UpdateListingRequest $request, UpdateListingAction $action)

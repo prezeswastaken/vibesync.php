@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use RateLimiter;
 
@@ -33,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
             logger()->info('Time: '.$query->time.' ms');
             logger()->info('');
         });
+
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('spotify', \SocialiteProviders\Spotify\Provider::class);
+        });
+
     }
 }
