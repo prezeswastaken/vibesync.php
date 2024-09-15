@@ -100,4 +100,15 @@ class ListingController extends Controller
 
         return response()->json($listing);
     }
+
+    public function destroy(Listing $listing)
+    {
+        if ($listing->user_id !== JWTAuth::user()->id) {
+            throw ListingException::unauthorized();
+        }
+
+        $listing->delete();
+
+        return response()->json(['message' => 'Listing deleted succesfully!'], 204);
+    }
 }

@@ -289,4 +289,30 @@ class ListingTest extends TestCase
 
         $response->assertJson(['message' => ListingException::unauthorized()->getMessage()]);
     }
+
+    public function test_user_can_delete_their_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->delete("/api/listings/{$listing->id}");
+
+        $response->assertStatus(204);
+
+        $this->assertNull(Listing::find($listing->id));
+    }
+
+    public function test_user_cant_delete_other_users_listing(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => 2]);
+
+        $response = $this->delete("/api/listings/{$listing->id}");
+
+        $response->assertStatus(ListingException::unauthorized()->getCode());
+
+        $response->assertJson(['message' => ListingException::unauthorized()->getMessage()]);
+    }
 }
