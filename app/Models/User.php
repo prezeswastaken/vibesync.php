@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -64,5 +65,15 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
+    }
+
+    public function likedListings(): MorphToMany
+    {
+        return $this->morphedByMany(Listing::class, 'likeable');
+    }
+
+    public function dislikedListings(): MorphToMany
+    {
+        return $this->morphedByMany(Listing::class, 'dislikeable');
     }
 }

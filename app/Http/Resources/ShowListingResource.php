@@ -27,6 +27,8 @@ class ShowListingResource extends JsonResource
             'genres' => GenreResource::collection($this->genres),
             'tags' => TagResource::collection($this->tags),
             'links' => LinkResource::collection($this->links),
+            'like_count' => $this->usersWhoLiked->count(),
+            'dislike_count' => $this->usersWhoDisliked->count(),
         ];
     }
 }

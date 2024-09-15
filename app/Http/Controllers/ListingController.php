@@ -17,7 +17,7 @@ class ListingController extends Controller
     public function index()
     {
         return response()->json(ListingResource::collection(
-            Listing::with('user:avatar_url,name,id')
+            Listing::with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
                 ->where('is_published', true)
                 ->orderByDesc('created_at')
                 ->get()
@@ -30,7 +30,7 @@ class ListingController extends Controller
 
         return response()->json(ListingResource::collection(
             $user->listings
-                ->load('user:avatar_url,name,id')->sortByDesc('created_at')
+                ->load('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')->sortByDesc('created_at')
         ));
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Str;
 
 class Listing extends Model
@@ -47,5 +48,15 @@ class Listing extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function usersWhoLiked(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'likeable');
+    }
+
+    public function usersWhoDisliked(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'dislikeable');
     }
 }

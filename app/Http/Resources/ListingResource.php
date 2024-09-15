@@ -24,6 +24,8 @@ class ListingResource extends JsonResource
             'genres' => $this->genres->pluck('name'),
             'tags' => $this->tags->pluck('name'),
             'links' => LinkResource::collection($this->links),
+            'like_count' => $this->usersWhoLiked->count(),
+            'dislike_count' => $this->usersWhoDisliked->count(),
         ];
     }
 }

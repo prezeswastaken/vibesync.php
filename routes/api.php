@@ -19,6 +19,9 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::post('listings/{listing}/links', [App\Http\Controllers\LinkController::class, 'store']);
     Route::delete('links/{link}', [App\Http\Controllers\LinkController::class, 'delete']);
 
+    Route::post('listings/{listing}/like', [App\Http\Controllers\LikeController::class, 'likeListing']);
+    Route::post('listings/{listing}/dislike', [App\Http\Controllers\LikeController::class, 'dislikeListing']);
+
     Route::post('avatars', [App\Http\Controllers\AvatarController::class, 'store']);
 });
 
