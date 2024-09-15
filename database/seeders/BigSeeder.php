@@ -9,7 +9,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class BigSeeder extends Seeder
 {
     public function run(): void
     {
@@ -27,6 +27,10 @@ class DatabaseSeeder extends Seeder
         foreach (Listing::all() as $listing) {
             $listing->tags()->attach(Tag::all()->random());
             $listing->genres()->attach(Genre::all()->random());
+        }
+
+        foreach (User::all() as $user) {
+            Listing::factory(100)->for($user)->published()->create();
         }
 
     }

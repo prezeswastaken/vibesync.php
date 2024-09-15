@@ -87,7 +87,7 @@ class ListingTest extends TestCase
 
         $response->assertStatus(200);
 
-        $listings = $response->json();
+        $listings = $response->json()['data'];
 
         $this->assertNotEmpty($listings, 'The listings array is empty'); // Ensure listings exist
 
@@ -162,7 +162,7 @@ class ListingTest extends TestCase
 
         $response->assertStatus(200);
 
-        $listings = $response->json();
+        $listings = $response->json()['data'];
 
         $this->assertNotEmpty($listings, 'The listings array is empty');
 

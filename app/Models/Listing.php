@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\Auth;
 use Str;
 
 class Listing extends Model
@@ -58,5 +59,15 @@ class Listing extends Model
     public function usersWhoDisliked(): MorphToMany
     {
         return $this->morphToMany(User::class, 'dislikeable');
+    }
+
+    public function doesCurrentUserLike(): bool
+    {
+        return $this->usersWhoLiked->contains(Auth::user());
+    }
+
+    public function doesCurrentUserDislike(): bool
+    {
+        return $this->usersWhoDisliked->contains(Auth::user());
     }
 }

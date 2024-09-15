@@ -10,28 +10,35 @@ use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ListingResource;
 use App\Http\Resources\ShowListingResource;
 use App\Models\Listing;
+use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 
 class ListingController extends Controller
 {
     public function index()
     {
-        return response()->json(ListingResource::collection(
-            Listing::with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
-                ->where('is_published', true)
-                ->orderByDesc('created_at')
-                ->get()
-        ));
+        $perPage = 10;
+
+        $listings = Listing::with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
+            ->where('is_published', true)
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
+        return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }
 
     public function myIndex()
     {
-        $user = JWTAuth::user();
+        $user = Auth::user();
 
-        return response()->json(ListingResource::collection(
-            $user->listings
-                ->load('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')->sortByDesc('created_at')
-        ));
+        $perPage = request()->input('per_page', 10);
+
+        $listings = $user->listings()
+            ->with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
+        return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }
 
     public function store(StoreListingRequest $request, StoreListingAction $action)

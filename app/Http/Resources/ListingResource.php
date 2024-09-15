@@ -26,6 +26,8 @@ class ListingResource extends JsonResource
             'links' => LinkResource::collection($this->links),
             'like_count' => $this->usersWhoLiked->count(),
             'dislike_count' => $this->usersWhoDisliked->count(),
+            'does_current_user_like' => $this->doesCurrentUserLike(),
+            'does_current_user_dislike' => $this->doesCurrentUserDislike(),
         ];
     }
 }
