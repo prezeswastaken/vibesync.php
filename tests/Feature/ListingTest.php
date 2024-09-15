@@ -7,6 +7,7 @@ use App\Models\Listing;
 use App\Models\User;
 use Auth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Str;
 use Tests\TestCase;
 
 class ListingTest extends TestCase
@@ -36,7 +37,7 @@ class ListingTest extends TestCase
         $model = Listing::find($response->json()['id']);
 
         $this->assertNotNull($model);
-        $this->assertEquals($listingRequest['title'], $model->title);
+        $this->assertEquals(Str::apa($listingRequest['title']), $model->title);
         $this->assertEquals($listingRequest['body'], $model->body);
         $this->assertEquals($listingRequest['is_sale_offer'], $model->is_sale_offer);
         $this->assertEquals($listingRequest['price'], $model->price);
@@ -253,7 +254,7 @@ class ListingTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertEquals($newListingData['title'], $listing->title);
+        $this->assertEquals(Str::apa($newListingData['title']), $listing->title);
         $this->assertEquals($newListingData['body'], $listing->body);
         $this->assertEquals($newListingData['is_sale_offer'], $listing->is_sale_offer);
         $this->assertEquals($newListingData['price'], $listing->price);
