@@ -41,6 +41,7 @@ class ListingTest extends TestCase
         $this->assertEquals($listingRequest['body'], $model->body);
         $this->assertEquals($listingRequest['is_sale_offer'], $model->is_sale_offer);
         $this->assertEquals($listingRequest['price'], $model->price);
+        $this->assertEquals($user->id, $model->user_id);
 
         $model->tags->each(function ($tag) use ($listingRequest) {
             $this->assertContains($tag->id, $listingRequest['tag_ids']);
