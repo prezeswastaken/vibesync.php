@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreGenreRequest;
 use App\Http\Requests\UpdateGenreRequest;
 use App\Models\Genre;
+use Illuminate\Http\JsonResponse;
 
 class GenreController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $genres = Genre::orderBy('name')->get();
 

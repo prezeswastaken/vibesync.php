@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\SocialiteException;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use JWTAuth;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    public function auth()
+    public function auth(): RedirectResponse
     {
         return Socialite::driver('google')->redirect();
     }
 
-    public function callback()
+    public function callback(): RedirectResponse
     {
         $googleUser = Socialite::driver('google')->user();
 
@@ -40,7 +41,7 @@ class GoogleController extends Controller
         return $this->redirectToFrontend($jwtToken);
     }
 
-    private function redirectToFrontend(string $jwtToken)
+    private function redirectToFrontend(string $jwtToken): RedirectResponse
     {
         $frontendUrl = config('frontend.url');
 

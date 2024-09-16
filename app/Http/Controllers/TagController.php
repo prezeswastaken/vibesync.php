@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
+use Illuminate\Http\JsonResponse;
 
 class TagController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $tags = Tag::orderBy('name')->get();
 
