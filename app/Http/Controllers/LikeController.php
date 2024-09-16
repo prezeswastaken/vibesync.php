@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ListingLiked;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,6 +23,8 @@ class LikeController extends Controller
         }
 
         $user->likedListings()->attach($listing->id);
+
+        broadcast(new ListingLiked($listing, $user->id, $user->name))->toOthers();
 
         return response()->json(['message' => 'Listing liked'], 201);
     }
