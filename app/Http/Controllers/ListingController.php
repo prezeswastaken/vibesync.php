@@ -13,12 +13,13 @@ use App\Http\Resources\ListingResource;
 use App\Http\Resources\ShowListingResource;
 use App\Models\Listing;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 
 class ListingController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $perPage = 10;
 
