@@ -14,7 +14,7 @@ class CurrencySeeder extends Seeder
         $currencies = [
             ['code' => 'USD', 'rate_to_usd' => 1.0],
             ['code' => 'EUR', 'rate_to_usd' => 1.2],
-            ['code' => 'PLN', 'rate_to_usd' => 4.2],
+            ['code' => 'PLN', 'rate_to_usd' => 0.25],
         ];
 
         foreach ($currencies as $currency) {

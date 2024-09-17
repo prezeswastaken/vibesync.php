@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\StoreListingAction;
 use App\Actions\UpdateListingAction;
 use App\Exceptions\ListingException;
+use App\Http\Requests\ShowListingsRequest;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
 use App\Http\Resources\ListingResource;
@@ -18,11 +19,11 @@ use JWTAuth;
 
 class ListingController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(ShowListingsRequest $request): JsonResponse
     {
         $perPage = 10;
 
-        $listings = Listing::with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
+        $listings = Listing::with(['user:id,avatar_url,name', 'usersWhoLiked:id', 'usersWhoDisliked:id', 'price', 'tags:id,name', 'genres:id,name'])
             ->where('is_published', true)
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -30,7 +31,7 @@ class ListingController extends Controller
         return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }
 
-    public function myIndex(): JsonResponse
+    public function myIndex(ShowListingsRequest $request): JsonResponse
     {
         $user = Auth::user();
 

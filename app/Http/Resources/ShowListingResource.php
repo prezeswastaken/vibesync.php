@@ -19,7 +19,7 @@ class ShowListingResource extends JsonResource
             'title' => $this->title,
             'author_avatar_url' => $this->user->avatar_url,
             'body' => $this->body,
-            'price' => $this->price,
+            'price' => PriceResource::make($this->price),
             'is_sale_offer' => $this->is_sale_offer,
             'is_published' => $this->is_published,
             'created_at' => $this->created_at,
