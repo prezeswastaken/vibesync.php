@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CurrencyId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateListingRequest extends FormRequest
@@ -24,6 +25,7 @@ class UpdateListingRequest extends FormRequest
             'body' => 'required|string|min:3',
             'is_sale_offer' => 'required|boolean',
             'price' => 'nullable|numeric|required_if:is_sale_offer,true',
+            'currency_id' => ['nullable', 'numeric', 'required_if:is_sale_offer,true', new CurrencyId],
             'tag_ids' => 'array|required',
             'genre_ids' => 'array|required',
         ];

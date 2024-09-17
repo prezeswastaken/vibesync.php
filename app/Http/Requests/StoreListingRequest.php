@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CurrencyId;
 use Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -21,7 +22,8 @@ class StoreListingRequest extends FormRequest
             'title' => 'required|string|max:255|min:3',
             'body' => 'required|string|min:3',
             'is_sale_offer' => 'required|boolean',
-            'price' => 'nullable|numeric|required_if:is_sale_offer,true',
+            'price' => ['nullable', 'numeric', 'required_if:is_sale_offer,true'],
+            'currency_id' => ['nullable', 'numeric', 'required_if:is_sale_offer,true', new CurrencyId],
             'tag_ids' => 'array|required',
             'genre_ids' => 'array|required',
         ];

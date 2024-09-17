@@ -11,6 +11,7 @@ class StoreListingAction
         string $body,
         bool $isSaleOffer,
         ?float $price,
+        ?int $currencyId,
         array $tagIds,
         array $genreIds,
         int $userId,
@@ -19,9 +20,15 @@ class StoreListingAction
             'title' => $title,
             'body' => $body,
             'is_sale_offer' => $isSaleOffer,
-            'price' => $price,
             'user_id' => $userId,
         ]);
+
+        if ($isSaleOffer) {
+            $listing->price()->create([
+                'amount' => $price,
+                'currency_id' => $currencyId,
+            ]);
+        }
 
         $listing->tags()->attach($tagIds);
         $listing->genres()->attach($genreIds);

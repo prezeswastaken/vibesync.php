@@ -19,6 +19,7 @@ class BigSeeder extends Seeder
         ]);
         User::factory(10)->create();
         $this->call([
+            CurrencySeeder::class,
             TagSeeder::class,
             GenreSeeder::class,
             ListingSeeder::class,

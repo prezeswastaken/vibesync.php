@@ -24,6 +24,7 @@ class ListingTest extends TestCase
             'body' => 'Test body. This is a really long body',
             'is_sale_offer' => true,
             'price' => 60,
+            'currency_id' => 1,
             'tag_ids' => [1, 2, 3],
             'genre_ids' => [1, 2, 3],
         ];
@@ -40,7 +41,7 @@ class ListingTest extends TestCase
         $this->assertEquals(Str::apa($listingRequest['title']), $model->title);
         $this->assertEquals($listingRequest['body'], $model->body);
         $this->assertEquals($listingRequest['is_sale_offer'], $model->is_sale_offer);
-        $this->assertEquals($listingRequest['price'], $model->price);
+        $this->assertEquals($listingRequest['price'], $model->price->amount);
         $this->assertEquals($user->id, $model->user_id);
 
         $model->tags->each(function ($tag) use ($listingRequest) {
@@ -243,8 +244,9 @@ class ListingTest extends TestCase
         $newListingData = [
             'title' => 'New great title',
             'body' => 'New body',
-            'is_sale_offer' => false,
+            'is_sale_offer' => true,
             'price' => 100,
+            'currency_id' => 3,
             'tag_ids' => [1, 2, 3],
             'genre_ids' => [1, 2, 3],
         ];
@@ -258,7 +260,8 @@ class ListingTest extends TestCase
         $this->assertEquals(Str::apa($newListingData['title']), $listing->title);
         $this->assertEquals($newListingData['body'], $listing->body);
         $this->assertEquals($newListingData['is_sale_offer'], $listing->is_sale_offer);
-        $this->assertEquals($newListingData['price'], $listing->price);
+        $this->assertEquals($newListingData['price'], $listing->price->amount);
+        $this->assertEquals($newListingData['currency_id'], $listing->price->currency_id);
 
         $listing->tags->each(function ($tag) use ($newListingData) {
             $this->assertContains($tag->id, $newListingData['tag_ids']);

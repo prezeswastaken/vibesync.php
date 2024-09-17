@@ -60,6 +60,7 @@ return [
     'unique' => ':attribute jest już zajęty.',
     'url' => 'format :attribute jest nieprawidłowy.',
     'timezone' => ':attribute musi być prawidłową strefą czasową.',
+    'currency_code' => 'Nieprawidłowa waluta.',
 
     /*
     |--------------------------------------------------------------------------
@@ -101,6 +102,7 @@ return [
         'price' => 'cena',
         'tag_ids' => 'tagi',
         'genre_ids' => 'gatunki',
+        'currency_code' => 'kod waluty',
     ],
 
 ];

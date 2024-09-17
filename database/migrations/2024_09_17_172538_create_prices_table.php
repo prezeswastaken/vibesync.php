@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\User;
+use App\Models\Currency;
+use App\Models\Listing;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,13 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('listings', function (Blueprint $table) {
+        Schema::create('prices', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('body');
-            $table->boolean('is_sale_offer');
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->boolean('is_published')->default(false);
+            $table->foreignIdFor(Listing::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Currency::class)->constrained()->cascadeOnDelete();
+            $table->float('amount');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('listings');
+        Schema::dropIfExists('prices');
     }
 };

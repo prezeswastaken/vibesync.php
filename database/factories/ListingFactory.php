@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Link;
+use App\Models\Price;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +22,6 @@ class ListingFactory extends Factory
             'title' => $this->faker->sentence,
             'body' => $this->faker->realTextBetween(10, 1000),
             'is_sale_offer' => $this->faker->boolean,
-            'price' => $this->faker->boolean ? $this->faker->randomFloat(2, 0, 1000) : null,
         ];
     }
 
@@ -33,6 +33,7 @@ class ListingFactory extends Factory
             Link::factory()->count(3)->create([
                 'listing_id' => $listing->id,
             ]);
+            Price::factory()->for($listing)->create();
         });
 
     }

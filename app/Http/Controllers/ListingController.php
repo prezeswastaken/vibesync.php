@@ -13,13 +13,12 @@ use App\Http\Resources\ListingResource;
 use App\Http\Resources\ShowListingResource;
 use App\Models\Listing;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 
 class ListingController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
         $perPage = 10;
 
@@ -52,6 +51,7 @@ class ListingController extends Controller
             $request->body,
             $request->is_sale_offer,
             $request->price,
+            $request->currency_id,
             $request->tag_ids,
             $request->genre_ids,
             JWTAuth::user()->id,
@@ -81,6 +81,7 @@ class ListingController extends Controller
             $request->body,
             $request->is_sale_offer,
             $request->price,
+            $request->currency_id,
             $request->tag_ids,
             $request->genre_ids,
         );
