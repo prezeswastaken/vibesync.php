@@ -319,4 +319,37 @@ class ListingTest extends TestCase
 
         $response->assertJson(['message' => ListingException::unauthorized()->getMessage()]);
     }
+
+    public function test_user_can_show_listings_in_different_currencies(): void
+    {
+        $user = User::find(1);
+        Auth::login($user);
+        $listing = Listing::factory()->create(['user_id' => $user->id]);
+        $listing->price->currency_id = 1;
+        $listing->price->save();
+
+        $response = $this->get("/api/listings/{$listing->id}?currency_id=3");
+
+        $response->assertStatus(200);
+
+        $listingId = $listing->id;
+
+        $listing = $response->json();
+
+        $this->assertArrayHasKey('price', $listing);
+        $this->assertArrayHasKey('currency_code', $listing['price']);
+        $this->assertArrayHasKey('amount', $listing['price']);
+
+        $this->assertEquals('PLN', $listing['price']['currency_code']);
+
+        $response = $this->get("/api/listings/{$listingId}?currency_id=2");
+        $listing = $response->json();
+
+        $this->assertEquals('EUR', $listing['price']['currency_code']);
+
+        $response = $this->get("/api/listings/{$listingId}?currency_id=1");
+        $listing = $response->json();
+
+        $this->assertEquals('USD', $listing['price']['currency_code']);
+    }
 }

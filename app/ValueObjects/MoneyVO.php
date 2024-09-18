@@ -47,13 +47,6 @@ class MoneyVO
         return $this->currency->getCode();
     }
 
-    public function getCurrencyId(): int
-    {
-        $id = Currency::where('code', $this->currency->getCode())->first()->id;
-
-        return $id;
-    }
-
     public function convertTo(int $currencyId): self
     {
         $thisInUSD = $this->toUSD();

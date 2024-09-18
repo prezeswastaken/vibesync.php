@@ -14,6 +14,7 @@ use App\Http\Resources\ListingResource;
 use App\Http\Resources\ShowListingResource;
 use App\Models\Listing;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use JWTAuth;
 
@@ -23,7 +24,7 @@ class ListingController extends Controller
     {
         $perPage = 10;
 
-        $listings = Listing::with(['user:id,avatar_url,name', 'usersWhoLiked:id', 'usersWhoDisliked:id', 'price', 'tags:id,name', 'genres:id,name'])
+        $listings = Listing::with(['user:id,avatar_url,name', 'usersWhoLiked:id', 'usersWhoDisliked:id', 'price.currency', 'tags:id,name', 'genres:id,name'])
             ->where('is_published', true)
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -38,7 +39,7 @@ class ListingController extends Controller
         $perPage = request()->input('per_page', 10);
 
         $listings = $user->listings()
-            ->with('user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked')
+            ->with(['user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked', 'price.currency', 'tags:id,name', 'genres:id,name'])
             ->orderByDesc('created_at')
             ->paginate($perPage);
 
@@ -61,8 +62,12 @@ class ListingController extends Controller
         return response()->json($listing, 201);
     }
 
-    public function show(Listing $listing): JsonResponse
+    public function show(Listing $listing, Request $request): JsonResponse
     {
+        $request->validate([
+            'currency_id' => 'nullable|exists:currencies,id',
+        ]);
+
         if (! $listing->is_published && $listing->user_id !== JWTAuth::user()->id) {
             throw ListingException::notFound();
         }
@@ -87,7 +92,7 @@ class ListingController extends Controller
             $request->genre_ids,
         );
 
-        return response()->json($listing);
+        return response()->json(ShowListingResource::make($listing));
     }
 
     public function publish(Listing $listing): JsonResponse

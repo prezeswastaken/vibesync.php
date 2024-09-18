@@ -17,7 +17,8 @@ class PriceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $price = $this->getPriceInTargetCurrency(intval($request->currency_id));
+        $currencyId = intval($request->currency_id);
+        $price = $this->getPriceInTargetCurrency($currencyId);
 
         return [
             'id' => $this->id,
@@ -26,11 +27,11 @@ class PriceResource extends JsonResource
         ];
     }
 
-    private function getPriceInTargetCurrency(?int $targetCurrencyId): MoneyVO
+    private function getPriceInTargetCurrency(int $targetCurrencyId): MoneyVO
     {
         $price = MoneyVO::fromAmountAndCurrency($this->amount, $this->currency);
 
-        if ($targetCurrencyId !== 0 && $targetCurrencyId !== $price->getCode()) {
+        if ($targetCurrencyId !== 0 && $targetCurrencyId !== $this->currency->id) {
             $price = $price->convertTo($targetCurrencyId);
         }
 

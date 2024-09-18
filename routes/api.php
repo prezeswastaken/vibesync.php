@@ -11,7 +11,7 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::post('logout', [App\Http\Controllers\AuthController::class, 'logout']);
     Route::post('refresh', [App\Http\Controllers\AuthController::class, 'refresh']);
 
-    Route::apiResource('listings', App\Http\Controllers\ListingController::class);
+    Route::apiResource('listings', App\Http\Controllers\ListingController::class)->only(['show', 'store', 'update', 'destroy']);
     Route::get('my/listings', [App\Http\Controllers\ListingController::class, 'myIndex']);
     Route::post('listings/{listing}/publish', [App\Http\Controllers\ListingController::class, 'publish']);
     Route::post('listings/{listing}/unpublish', [App\Http\Controllers\ListingController::class, 'unpublish']);
@@ -23,7 +23,11 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::post('listings/{listing}/dislike', [App\Http\Controllers\LikeController::class, 'dislikeListing']);
 
     Route::post('avatars', [App\Http\Controllers\AvatarController::class, 'store']);
+
+    Route::get('currencies', [App\Http\Controllers\CurrencyController::class, 'index']);
+
 });
+Route::get('listings', [App\Http\Controllers\ListingController::class, 'index']);
 
 Route::get('tags', [App\Http\Controllers\TagController::class, 'index']);
 Route::get('genres', [App\Http\Controllers\GenreController::class, 'index']);

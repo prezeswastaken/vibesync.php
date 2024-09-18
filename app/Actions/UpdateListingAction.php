@@ -27,6 +27,8 @@ class UpdateListingAction
                 'amount' => $price,
                 'currency_id' => $currencyId,
             ]);
+        } else {
+            $listing->price()->delete();
         }
 
         $listing->tags()->sync($tagIds);
