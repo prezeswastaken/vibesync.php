@@ -15,7 +15,7 @@ class GetPaginatedListingsAction
 
     public function handle(?Currency $currency = null)
     {
-        $listings = Listing::paginate(10);
+        $listings = Listing::orderByDesc('created_at')->paginate(10);
 
         if ($currency != null) {
             $collection = $listings->getCollection();
