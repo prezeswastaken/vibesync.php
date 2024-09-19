@@ -59,10 +59,10 @@ class MoneyDTO extends DTO
         return $this->currency;
     }
 
-    public function convertTo(int $currencyId): self
+    public function convertTo(Currency $currency): self
     {
         $thisInUSD = $this->toUSD();
-        $newCurrency = CurrencyDTO::fromId($currencyId);
+        $newCurrency = CurrencyDTO::fromCurrency($currency);
 
         $newAmount = $thisInUSD->amount / $newCurrency->getRateToUSD();
         $newCurrency = $newCurrency;
