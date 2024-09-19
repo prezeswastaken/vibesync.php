@@ -1,10 +1,10 @@
 <?php
 
-namespace App\ValueObjects;
+namespace App\DTOs;
 
 use App\Models\Currency;
 
-class CurrencyVO
+class CurrencyDTO extends DTO
 {
     private function __construct(
         protected string $code,

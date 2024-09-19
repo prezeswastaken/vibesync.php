@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\ValueObjects\MoneyVO;
+use App\DTOs\MoneyDTO;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,9 +27,9 @@ class PriceResource extends JsonResource
         ];
     }
 
-    private function getPriceInTargetCurrency(int $targetCurrencyId): MoneyVO
+    private function getPriceInTargetCurrency(int $targetCurrencyId): MoneyDTO
     {
-        $price = MoneyVO::fromAmountAndCurrency($this->amount, $this->currency);
+        $price = MoneyDTO::fromAmountAndCurrency($this->amount, $this->currency);
 
         if ($targetCurrencyId !== 0 && $targetCurrencyId !== $this->currency->id) {
             $price = $price->convertTo($targetCurrencyId);
