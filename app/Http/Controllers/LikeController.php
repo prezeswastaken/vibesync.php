@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Events\ListingLiked;
 use App\Models\Listing;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 
 class LikeController extends Controller
 {
-    public function likeListing(Listing $listing)
+    public function likeListing(Listing $listing, #[CurrentUser] User $user)
     {
-        $user = Auth::user();
-
         if ($user->dislikedListings->contains($listing)) {
             $user->dislikedListings()->detach($listing->id);
         }
@@ -29,10 +28,8 @@ class LikeController extends Controller
         return response()->json(['message' => 'Listing liked'], 201);
     }
 
-    public function dislikeListing(Listing $listing)
+    public function dislikeListing(Listing $listing, #[CurrentUser] User $user)
     {
-        $user = Auth::user();
-
         if ($user->likedListings->contains($listing)) {
             $user->likedListings()->detach($listing->id);
         }

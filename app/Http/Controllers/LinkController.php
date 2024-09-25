@@ -7,14 +7,19 @@ use App\Exceptions\ListingException;
 use App\Http\Requests\StoreLinkRequest;
 use App\Models\Link;
 use App\Models\Listing;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
-use JWTAuth;
 
 class LinkController extends Controller
 {
-    public function store(StoreLinkRequest $request, Listing $listing, AddLinkToListingAction $action): JsonResponse
-    {
-        if ($listing->user_id !== JWTAuth::user()->id) {
+    public function store(
+        StoreLinkRequest $request,
+        Listing $listing,
+        AddLinkToListingAction $action,
+        #[CurrentUser] User $user,
+    ): JsonResponse {
+        if ($listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 
@@ -26,9 +31,9 @@ class LinkController extends Controller
         return response()->json($link, 201);
     }
 
-    public function delete(Link $link): JsonResponse
+    public function delete(Link $link, #[CurrentUser] User $user): JsonResponse
     {
-        if ($link->listing->user_id !== JWTAuth::user()->id) {
+        if ($link->listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 

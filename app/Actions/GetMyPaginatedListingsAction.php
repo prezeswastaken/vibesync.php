@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Models\Currency;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 
 class GetMyPaginatedListingsAction
 {
     public function __construct(
         protected ConvertListingsToTargetCurrencyAction $convert,
+        #[CurrentUser] protected User $user,
     ) {}
 
     public function handle(?Currency $currency = null)
     {
-        $user = Auth::user();
-        $listings = $user->listings()->with(['user:id,avatar_url,name', 'usersWhoLiked', 'usersWhoDisliked', 'price.currency', 'tags', 'genres:id,name', 'links'])->orderByDesc('created_at')->paginate(10);
+        $listings = $this->user->listings()->with(['user:id,avatar_url,name', 'usersWhoLiked', 'usersWhoDisliked', 'price.currency', 'tags', 'genres:id,name', 'links'])->orderByDesc('created_at')->paginate(10);
 
         if (isset($currency)) {
             $collection = $listings->getCollection();

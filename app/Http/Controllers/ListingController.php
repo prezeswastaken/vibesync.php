@@ -17,9 +17,10 @@ use App\Http\Resources\ListingResource;
 use App\Http\Resources\ShowListingResource;
 use App\Models\Currency;
 use App\Models\Listing;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use JWTAuth;
 
 class ListingController extends Controller
 {
@@ -39,8 +40,11 @@ class ListingController extends Controller
         return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }
 
-    public function store(StoreListingRequest $request, StoreListingAction $action): JsonResponse
-    {
+    public function store(
+        StoreListingRequest $request,
+        StoreListingAction $action,
+        #[CurrentUser] User $user,
+    ): JsonResponse {
         $listing = $action->handle(
             $request->title,
             $request->body,
@@ -49,19 +53,23 @@ class ListingController extends Controller
             $request->currency_id,
             $request->tag_ids,
             $request->genre_ids,
-            JWTAuth::user()->id,
+            $user->id,
         );
 
         return response()->json(ShowListingResource::make($listing), 201);
     }
 
-    public function show(Listing $listing, Request $request, ConvertListingAction $convert): JsonResponse
-    {
+    public function show(
+        Listing $listing,
+        Request $request,
+        ConvertListingAction $convert,
+        #[CurrentUser] User $user,
+    ): JsonResponse {
         $request->validate([
             'currency_id' => 'nullable|exists:currencies,id',
         ]);
 
-        if (! $listing->is_published && $listing->user_id !== JWTAuth::user()->id) {
+        if (! $listing->is_published && $listing->user_id !== $user->id) {
             throw ListingException::notFound();
         }
 
@@ -71,9 +79,13 @@ class ListingController extends Controller
         return response()->json(ShowListingResource::make($listing));
     }
 
-    public function update(Listing $listing, UpdateListingRequest $request, UpdateListingAction $action): JsonResponse
-    {
-        if ($listing->user_id !== JWTAuth::user()->id) {
+    public function update(
+        Listing $listing,
+        UpdateListingRequest $request,
+        UpdateListingAction $action,
+        #[CurrentUser] User $user,
+    ): JsonResponse {
+        if ($listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 
@@ -91,9 +103,9 @@ class ListingController extends Controller
         return response()->json(ShowListingResource::make($listing));
     }
 
-    public function publish(Listing $listing): JsonResponse
+    public function publish(Listing $listing, #[CurrentUser] User $user): JsonResponse
     {
-        if ($listing->user_id !== JWTAuth::user()->id) {
+        if ($listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 
@@ -103,9 +115,9 @@ class ListingController extends Controller
         return response()->json($listing);
     }
 
-    public function unpublish(Listing $listing): JsonResponse
+    public function unpublish(Listing $listing, #[CurrentUser] User $user): JsonResponse
     {
-        if ($listing->user_id !== JWTAuth::user()->id) {
+        if ($listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 
@@ -115,9 +127,9 @@ class ListingController extends Controller
         return response()->json($listing);
     }
 
-    public function destroy(Listing $listing): JsonResponse
+    public function destroy(Listing $listing, #[CurrentUser] User $user): JsonResponse
     {
-        if ($listing->user_id !== JWTAuth::user()->id) {
+        if ($listing->user_id !== $user->id) {
             throw ListingException::unauthorized();
         }
 

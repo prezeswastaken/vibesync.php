@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Actions\RegisterUserAction;
 use App\Exceptions\AuthException;
 use App\Http\Requests\RegisterRequest;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -39,10 +41,8 @@ class AuthController extends Controller
 
     }
 
-    public function me(): JWTSubject
+    public function me(#[CurrentUser] User $user): JWTSubject
     {
-        $user = JWTAuth::user();
-
         return $user;
     }
 
