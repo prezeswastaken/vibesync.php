@@ -16,7 +16,7 @@ class SetAvatarForUserAction
         $avatarParts = explode('/', $avatarUrl);
         $oldAvatarFileName = end($avatarParts); // Get the last part directly
 
-        if ($oldAvatarFileName != null) {
+        if (isset($oldAvatarFileName)) {
             $oldAvatarFilePath = 'avatars/'.$oldAvatarFileName;
 
             try {
@@ -45,7 +45,9 @@ class SetAvatarForUserAction
     public function handle(User $user, UploadedFile $file)
     {
 
-        $this->deleteOldAvatarFile($user->avatar_url);
+        if (isset($user->avatar_url)) {
+            $this->deleteOldAvatarFile($user->avatar_url);
+        }
 
         $filename = $file->hashName();
 

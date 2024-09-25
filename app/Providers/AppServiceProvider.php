@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use RateLimiter;
@@ -24,15 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Model::shouldBeStrict(! app()->isProduction());
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(300)->by($request->user()?->id ?: $request->ip());
-        });
-
-        DB::listen(function ($query) {
-            logger()->info('Query Executed: '.$query->sql);
-            logger()->info('Bindings: '.implode(', ', $query->bindings));
-            logger()->info('Time: '.$query->time.' ms');
-            logger()->info('');
         });
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {

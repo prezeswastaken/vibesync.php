@@ -52,7 +52,7 @@ class ListingTest extends TestCase
         });
 
         $user = User::find($user->id)->load('listings')->first();
-        $this->assertNotNull($user->listings->first()->tags);
+        $this->assertNotNull($user->listings->load('tags')->first()->tags);
     }
 
     public function test_user_cant_create_listing_with_invalid_request(): void

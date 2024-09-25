@@ -16,9 +16,9 @@ class GetMyPaginatedListingsAction
     public function handle(?Currency $currency = null)
     {
         $user = Auth::user();
-        $listings = $user->listings()->with(['user:avatar_url,name,id', 'usersWhoLiked', 'usersWhoDisliked', 'price.currency', 'tags:id,name', 'genres:id,name'])->orderByDesc('created_at')->paginate(10);
+        $listings = $user->listings()->with(['user:id,avatar_url,name', 'usersWhoLiked', 'usersWhoDisliked', 'price.currency', 'tags', 'genres:id,name', 'links'])->orderByDesc('created_at')->paginate(10);
 
-        if ($currency != null) {
+        if (isset($currency)) {
             $collection = $listings->getCollection();
             $collection = $this->convert->handle($collection, $currency);
             $listings->setCollection($collection);

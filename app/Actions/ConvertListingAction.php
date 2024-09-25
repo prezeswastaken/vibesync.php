@@ -30,8 +30,8 @@ class ConvertListingAction
         $newPriceDTO = $priceDTO->convertTo($currency);
 
         $newPrice->amount = $newPriceDTO->getAmount();
+        $newPrice->currency = $currency;
         $newPrice->currency_id = $currency->id;
-        $newPrice->currency_code = $currency->code;
 
         return $listing;
     }

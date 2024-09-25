@@ -11,7 +11,7 @@ class UpdateListingAction
         string $title,
         string $body,
         bool $isSaleOffer,
-        ?float $price,
+        float|string|null $price,
         ?int $currencyId,
         array $tagIds,
         array $genreIds,

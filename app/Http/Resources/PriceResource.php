@@ -19,7 +19,8 @@ class PriceResource extends JsonResource
         return [
             'id' => $this->id,
             'amount' => number_format($this->amount, 2),
-            'currency_code' => $this->currency_code ?? $this->currency->code,
+            'currency_code' => $this->currency->code,
+            'currency_id' => $this->currency->id,
         ];
     }
 }

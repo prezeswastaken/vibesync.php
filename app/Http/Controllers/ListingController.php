@@ -52,7 +52,7 @@ class ListingController extends Controller
             JWTAuth::user()->id,
         );
 
-        return response()->json($listing, 201);
+        return response()->json(ShowListingResource::make($listing), 201);
     }
 
     public function show(Listing $listing, Request $request, ConvertListingAction $convert): JsonResponse
