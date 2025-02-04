@@ -8,4 +8,9 @@ class UpdateAccountException extends AppException
     {
         return new self('Invalid password', 400);
     }
+
+    public static function wrongCurrentEmail(): self
+    {
+        return new self('Invalid current email', 400);
+    }
 }

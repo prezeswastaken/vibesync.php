@@ -15,7 +15,11 @@ class AccountController extends Controller
             throw UpdateAccountException::invalidPassword();
         }
 
-        $user = tap($user)->update($request->only(['name', 'password']));
+        if (isset($request->email) && $user->email != $request->current_email) {
+            throw UpdateAccountException::wrongCurrentEmail();
+        }
+
+        $user = tap($user)->update($request->only(['name', 'password', 'email']));
 
         return response()->json($user);
     }

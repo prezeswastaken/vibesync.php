@@ -92,4 +92,81 @@ class AccountTest extends TestCase
 
         $response->assertStatus(302);
     }
+
+    public function test_user_can_update_email(): void
+    {
+        $user = User::factory()->create();
+        /** @var Authenticatable $user */
+        $this->actingAs($user);
+
+        $newEmail = $this->faker()->safeEmail;
+        $response = $this->patch('/api/account', [
+            'current_email' => $user->email,
+            'email' => $newEmail,
+            'email_confirmation' => $newEmail,
+        ]);
+
+        /** @var User $user */
+        $user->refresh();
+        $this->assertEquals($newEmail, $user->email);
+        $response->assertJsonStructure(['name', 'email', 'created_at', 'updated_at']);
+        $response->assertStatus(200);
+    }
+
+    public function test_user_cant_update_email_with_wrong_current_email(): void
+    {
+        $user = User::factory()->create();
+        /** @var Authenticatable $user */
+        $this->actingAs($user);
+
+        $newEmail = $this->faker()->safeEmail;
+        $response = $this->patch('/api/account', [
+            'current_email' => 'wrong@email.com',
+            'email' => $newEmail,
+            'email_confirmation' => $newEmail,
+        ]);
+
+        /** @var User $user */
+        $user->refresh();
+        $this->assertNotEquals($newEmail, $user->email);
+        $response->assertStatus(400);
+    }
+
+    public function test_user_cant_update_email_with_wrong_confirmation(): void
+    {
+        $user = User::factory()->create();
+        /** @var Authenticatable $user */
+        $this->actingAs($user);
+
+        $newEmail = $this->faker()->safeEmail;
+        $response = $this->patch('/api/account', [
+            'current_email' => $user->email,
+            'email' => $newEmail,
+            'email_confirmation' => 'wrong@email.com',
+        ]);
+
+        /** @var User $user */
+        $user->refresh();
+        $this->assertNotEquals($newEmail, $user->email);
+        $response->assertStatus(302);
+    }
+
+    public function test_user_cant_update_email_to_existing_email(): void
+    {
+        $user = User::factory()->create();
+        $existingUser = User::factory()->create();
+        /** @var Authenticatable $user */
+        $this->actingAs($user);
+
+        $response = $this->patch('/api/account', [
+            'current_email' => $user->email,
+            'email' => $existingUser->email,
+            'email_confirmation' => $existingUser->email,
+        ]);
+
+        /** @var User $user */
+        $user->refresh();
+        $this->assertNotEquals($existingUser->email, $user->email);
+        $response->assertStatus(302);
+    }
 }

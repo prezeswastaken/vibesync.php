@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAccountRequest extends FormRequest
 {
@@ -22,13 +24,22 @@ class UpdateAccountRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(#[CurrentUser] User $user): array
     {
         return [
             'name' => 'string|max:255',
             'current_password' => 'string|required_with:password|min:8',
             'password' => 'string|min:8|confirmed',
             'password_confirmation' => 'string|required_with:password|min:8',
+            'current_email' => 'email|string',
+            'email' => [
+                'email',
+                'string',
+                'confirmed',
+                'unique:users,email',
+                Rule::notIn([$user->email]),
+            ],
+            'email_confirmation' => 'string|required_with:new_email',
         ];
     }
 }
