@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\EmailController;
 use App\Http\Middleware\AuthOnly;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,7 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::get('currencies', [App\Http\Controllers\CurrencyController::class, 'index']);
 
     Route::patch('account', [AccountController::class, 'update']);
+    Route::post('email', [EmailController::class, 'update']);
 
 });
 Route::get('listings', [App\Http\Controllers\ListingController::class, 'index']);
