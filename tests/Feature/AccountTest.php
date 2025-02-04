@@ -10,6 +10,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+const headers = ['accept' => 'application/json'];
+
 class AccountTest extends TestCase
 {
     use RefreshDatabase;
@@ -22,7 +24,7 @@ class AccountTest extends TestCase
         $this->actingAs($user);
 
         $newName = $this->faker()->name;
-        $response = $this->patch('/api/account', ['name' => $newName]);
+        $response = $this->patch('/api/account', ['name' => $newName], headers);
 
         /** @var User $user */
         $user->refresh();
@@ -84,13 +86,13 @@ class AccountTest extends TestCase
             'current_password' => 'password',
             'password' => $newPassword,
             'password_confirmation' => 'wrong_confirmation',
-        ]);
+        ], headers);
 
         /** @var User $user */
         $user->refresh();
         $this->assertFalse(password_verify($newPassword, $user->password));
 
-        $response->assertStatus(302);
+        $response->assertStatus(422);
     }
 
     public function test_user_can_update_email(): void
@@ -143,12 +145,12 @@ class AccountTest extends TestCase
             'current_email' => $user->email,
             'email' => $newEmail,
             'email_confirmation' => 'wrong@email.com',
-        ]);
+        ], headers);
 
         /** @var User $user */
         $user->refresh();
         $this->assertNotEquals($newEmail, $user->email);
-        $response->assertStatus(302);
+        $response->assertStatus(422);
     }
 
     public function test_user_cant_update_email_to_existing_email(): void
@@ -162,11 +164,11 @@ class AccountTest extends TestCase
             'current_email' => $user->email,
             'email' => $existingUser->email,
             'email_confirmation' => $existingUser->email,
-        ]);
+        ], headers);
 
         /** @var User $user */
         $user->refresh();
         $this->assertNotEquals($existingUser->email, $user->email);
-        $response->assertStatus(302);
+        $response->assertStatus(422);
     }
 }
