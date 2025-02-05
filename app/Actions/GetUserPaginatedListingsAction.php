@@ -16,7 +16,7 @@ class GetUserPaginatedListingsAction
     public function handle(int $userId, ?Currency $currency = null)
     {
         $listings = User::findOrFail($userId)->listings()->with([
-            'user:id,avatar_url,name',
+            'user:id,avatar_url,name,email',
             'usersWhoLiked',
             'usersWhoDisliked',
             'price.currency',
@@ -24,6 +24,7 @@ class GetUserPaginatedListingsAction
             'genres:id,name',
             'links',
         ])
+            ->published()
             ->orderByDesc('created_at')
             ->paginate(10);
 

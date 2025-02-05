@@ -17,7 +17,7 @@ class GetPaginatedListingsAction
     {
         $listings = Listing::with(
             [
-                'user:id,avatar_url,name',
+                'user:id,avatar_url,name,email',
                 'usersWhoLiked', 'usersWhoDisliked',
                 'price.currency',
                 'tags',

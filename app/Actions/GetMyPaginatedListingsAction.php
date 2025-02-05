@@ -19,7 +19,7 @@ class GetMyPaginatedListingsAction
     {
         $listings = $this->user->listings()->with(
             [
-                'user:id,avatar_url,name',
+                'user:id,avatar_url,name,email',
                 'usersWhoLiked',
                 'usersWhoDisliked',
                 'price.currency',

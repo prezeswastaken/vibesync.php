@@ -33,6 +33,8 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::post('email', [EmailController::class, 'update']);
 
     Route::get('/search-users', [UserController::class, 'search']);
+    Route::get('/users/{user}/listings', [UserController::class, 'listings']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
 
 });
 Route::get('listings', [App\Http\Controllers\ListingController::class, 'index']);

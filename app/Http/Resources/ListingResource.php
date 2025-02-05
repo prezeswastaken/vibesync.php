@@ -12,6 +12,7 @@ class ListingResource extends JsonResource
         return [
             'id' => $this->id,
             'author' => $this->user->name,
+            'email' => $this->user->email,
             'user_id' => $this->user_id,
             'title' => $this->title,
             'author_avatar_url' => $this->user->avatar_url,
