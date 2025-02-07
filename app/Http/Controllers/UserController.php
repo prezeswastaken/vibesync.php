@@ -38,4 +38,15 @@ class UserController extends Controller
 
         return response()->json($user, 200);
     }
+
+    public function destroy(User $user): JsonResponse
+    {
+        if ($user->id === auth()->id()) {
+            return response()->json(['message' => 'You cannot delete yourself'], 400);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully'], 204);
+    }
 }

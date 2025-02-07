@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\AuthOnly;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,7 @@ Route::middleware([AuthOnly::class])->group(function () {
     Route::get('/search-users', [UserController::class, 'search']);
     Route::get('/users/{user}/listings', [UserController::class, 'listings']);
     Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware([AdminOnly::class]);
 
 });
 Route::get('listings', [App\Http\Controllers\ListingController::class, 'index']);
