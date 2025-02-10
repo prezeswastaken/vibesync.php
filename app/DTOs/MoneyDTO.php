@@ -65,7 +65,6 @@ class MoneyDTO extends DTO
         $newCurrency = CurrencyDTO::fromCurrency($currency);
 
         $newAmount = $thisInUSD->amount / $newCurrency->getRateToUSD();
-        $newCurrency = $newCurrency;
 
         return $this::make($newAmount, $newCurrency);
     }
