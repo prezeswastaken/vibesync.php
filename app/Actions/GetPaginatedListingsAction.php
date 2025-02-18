@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\Currency;
 use App\Models\Listing;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class GetPaginatedListingsAction
 {
@@ -13,7 +14,7 @@ class GetPaginatedListingsAction
         protected ConvertListingsToTargetCurrencyAction $convert,
     ) {}
 
-    public function handle(?Currency $currency = null)
+    public function handle(?Currency $currency = null): LengthAwarePaginator
     {
         $listings = Listing::with(
             [
