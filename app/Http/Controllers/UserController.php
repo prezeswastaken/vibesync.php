@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\GetUserPaginatedListingsAction;
 use App\Actions\SearchUsersAction;
+use App\Enums\SortByLikesEnum;
 use App\Http\Requests\ShowListingsRequest;
 use App\Http\Resources\ListingResource;
 use App\Http\Resources\UserResource;
@@ -25,7 +26,7 @@ class UserController extends Controller
     public function listings(User $user, ShowListingsRequest $request, GetUserPaginatedListingsAction $action): JsonResponse
     {
         $currency = Currency::find($request->currency_id);
-        $listings = $action->handle($user->id, $currency);
+        $listings = $action->handle($user->id, $currency, SortByLikesEnum::fromRequest($request));
 
         $response = response()->json(ListingResource::collection($listings)->response()->getData(true));
 

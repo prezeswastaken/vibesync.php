@@ -9,6 +9,7 @@ use App\Actions\GetMyPaginatedListingsAction;
 use App\Actions\GetPaginatedListingsAction;
 use App\Actions\StoreListingAction;
 use App\Actions\UpdateListingAction;
+use App\Enums\SortByLikesEnum;
 use App\Exceptions\ListingException;
 use App\Http\Requests\ShowListingsRequest;
 use App\Http\Requests\StoreListingRequest;
@@ -27,7 +28,7 @@ class ListingController extends Controller
     public function index(ShowListingsRequest $request, GetPaginatedListingsAction $action): JsonResponse
     {
         $currency = Currency::find($request->currency_id);
-        $listings = $action->handle($currency);
+        $listings = $action->handle($currency, SortByLikesEnum::fromRequest($request));
 
         return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }
@@ -35,7 +36,7 @@ class ListingController extends Controller
     public function myIndex(ShowListingsRequest $request, GetMyPaginatedListingsAction $action): JsonResponse
     {
         $currency = Currency::find($request->currency_id);
-        $listings = $action->handle($currency);
+        $listings = $action->handle($currency, SortByLikesEnum::fromRequest($request));
 
         return response()->json(ListingResource::collection($listings)->response()->getData(true));
     }

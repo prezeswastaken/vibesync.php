@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\SortByLikesEnum;
 use App\Models\Currency;
 use App\Models\Listing;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,19 +15,30 @@ class GetPaginatedListingsAction
         protected ConvertListingsToTargetCurrencyAction $convert,
     ) {}
 
-    public function handle(?Currency $currency = null): LengthAwarePaginator
+    public function handle(?Currency $currency, SortByLikesEnum $sortByLikes): LengthAwarePaginator
     {
         $listings = Listing::with(
             [
                 'user:id,avatar_url,name,email',
-                'usersWhoLiked', 'usersWhoDisliked',
+                'usersWhoLiked',
+                'usersWhoDisliked',
                 'price.currency',
                 'tags',
                 'genres:id,name',
                 'links',
             ])
             ->published()
-            ->orderByDesc('created_at')
+            ->withCount('usersWhoLiked')
+            ->withCount('usersWhoDisLiked')
+            ->when($sortByLikes === SortByLikesEnum::None, function ($q) {
+                return $q->orderByDesc('created_at');
+            })
+            ->when($sortByLikes === SortByLikesEnum::Ascending, function ($q) {
+                return $q->orderBy('users_who_liked_count');
+            })
+            ->when($sortByLikes === SortByLikesEnum::Descending, function ($q) {
+                return $q->orderByDesc('users_who_liked_count');
+            })
             ->paginate(10);
 
         if (isset($currency)) {

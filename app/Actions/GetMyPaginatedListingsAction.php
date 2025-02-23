@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\SortByLikesEnum;
 use App\Models\Currency;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -15,7 +16,7 @@ class GetMyPaginatedListingsAction
         #[CurrentUser] protected User $user,
     ) {}
 
-    public function handle(?Currency $currency = null)
+    public function handle(?Currency $currency, SortByLikesEnum $sortByLikes)
     {
         $listings = $this->user->listings()->with(
             [
@@ -27,7 +28,18 @@ class GetMyPaginatedListingsAction
                 'genres:id,name',
                 'links',
             ])
-            ->orderByDesc('created_at')
+            ->withCount('usersWhoLiked')
+            ->withCount('usersWhoDisLiked')
+            ->when($sortByLikes === SortByLikesEnum::None, function ($q) {
+                return $q->orderByDesc('created_at');
+            })
+            ->when($sortByLikes === SortByLikesEnum::Ascending, function ($q) {
+                return $q->orderBy('users_who_liked_count');
+            })
+            ->when($sortByLikes === SortByLikesEnum::Descending, function ($q) {
+                return $q->orderByDesc('users_who_liked_count');
+            })
+
             ->paginate(10);
 
         if (isset($currency)) {
